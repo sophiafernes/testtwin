@@ -90,7 +90,7 @@ const Stepper = ({
                   ? 'text-white' 
                   : isActive 
                     ? 'text-white' 
-                    : 'bg-gray-700 text-gray-400'
+                    : 'bg-black/10 text-gray-400'
               }`} style={isComplete || isActive ? {background: 'linear-gradient(135deg, #c8a8e9 0%, #8b95e5 100%)'} : {}}>
                 {isComplete ? (
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,7 +100,7 @@ const Stepper = ({
               </div>
               {index < steps.length - 1 && (
                 <div className={`flex-1 h-0.5 mx-2 transition-all duration-300 ${
-                  isComplete ? 'opacity-100' : 'bg-gray-700 opacity-30'
+                  isComplete ? 'opacity-100' : 'bg-black/10 '
                 }`} style={isComplete ? {background: 'linear-gradient(135deg, #c8a8e9 0%, #8b95e5 100%)'} : {}} />
               )}
             </React.Fragment>
@@ -151,8 +151,8 @@ const Stepper = ({
             disabled={submissionState.isSubmitting || submissionState.isSubmitted}
             className={`px-6 py-3 rounded-full text-white transition-colors ${
               submissionState.isSubmitting || submissionState.isSubmitted
-                ? 'bg-gray-800 cursor-not-allowed opacity-50'
-                : 'bg-gray-700 hover:bg-gray-600'
+                ? 'bg-gray-900 cursor-not-allowed opacity-50'
+                : 'bg-gray-900 hover:bg-black cursor-pointer'
             }`}
           >
             {backButtonText}
@@ -164,7 +164,7 @@ const Stepper = ({
           className={`px-6 py-3 rounded-full text-white font-medium transition-all duration-200 flex items-center space-x-2 ${
             submissionState.isSubmitting || submissionState.isSubmitted
               ? 'opacity-75 cursor-not-allowed'
-              : 'hover:shadow-lg transform hover:scale-105'
+              : 'hover:shadow-lg cursor-pointer transform hover:scale-105'
           }`}
           style={{background: 'linear-gradient(135deg, #c8a8e9 0%, #8b95e5 100%)', color: '#000000'}}
         >
@@ -444,7 +444,7 @@ const TestTwinSurvey = () => {
           </p>
         </div>
 
-        <div className="bg-gray-800/60 backdrop-blur-sm rounded-2xl p-8" style={{border: '2px solid #c8a8e9'}}>
+        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8" style={{border: '2px solid #c8a8e9'}}>
           <Stepper
             initialStep={1}
             onStepChange={(step) => console.log('Step:', step)}
@@ -466,7 +466,7 @@ const TestTwinSurvey = () => {
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
-                    className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+                    className="w-full p-3 rounded-lg border border-white/10 text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
                     placeholder="your.email@example.com"
                   />
                 </div>
@@ -477,7 +477,7 @@ const TestTwinSurvey = () => {
                     type="text"
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
-                    className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+                    className="w-full p-3 rounded-lg border border-white/10 text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
                     placeholder="Your full name"
                   />
                 </div>
@@ -702,13 +702,14 @@ const TestTwinSurvey = () => {
                 <div>
                   <label className="block text-white font-medium mb-2">
                     Is there any other information about yourself or your study preferences that would be important for potential study partners? 
-                    <span className="text-sm text-gray-400 block mt-1">(This will be shared with your test twin)</span>
+                    <span className="text-transparent text-sm text-gray-400 block mt-1" style={{backgroundImage: 'linear-gradient(135deg, #c8a8e9 0%, #8b95e5 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text'}}>(This will be shared with your test twin)</span>
+
                   </label>
                   <textarea
                     value={formData.additionalInfo}
                     onChange={(e) => handleInputChange('additionalInfo', e.target.value)}
                     rows={4}
-                    className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+                    className="w-full p-3 rounded-lg border border-white/10 text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
                     placeholder="Tell us anything else that would help us find your perfect study match..."
                   />
                 </div>
