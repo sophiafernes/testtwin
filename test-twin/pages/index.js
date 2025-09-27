@@ -156,9 +156,6 @@ const TestTwinHomepage = () => {
               <h3 className="text-2xl mb-8 text-white" style={{fontWeight: '500'}}>Coming Soon</h3>
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="bg-gray-800/60 backdrop-blur-sm p-4 rounded-xl" style={{border: '2px solid #c8a8e9'}}>
-                  <span style={{color: '#c8a8e9', fontWeight: '500'}}>MCAT PrepPartner</span>
-                </div>
-                <div className="bg-gray-800/60 backdrop-blur-sm p-4 rounded-xl" style={{border: '2px solid #c8a8e9'}}>
                   <span style={{color: '#c8a8e9', fontWeight: '500'}}>Community Support Hub</span>
                 </div>
                 <div className="bg-gray-800/60 backdrop-blur-sm p-4 rounded-xl" style={{border: '2px solid #c8a8e9'}}>
