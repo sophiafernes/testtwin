@@ -1,6 +1,5 @@
 import '../styles/globals.css'
 import '../components/Plasma.css'
-import '../components/Stacker.css'
 
 export default function App({ Component, pageProps }) {
   return (

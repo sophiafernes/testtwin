@@ -2,23 +2,41 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
-// Mock Stepper components (since we can't import the actual files)
+// Mock Stepper components with validation
 const Stepper = ({ 
   children, 
   initialStep = 1, 
   onStepChange = () => {}, 
   onFinalStepCompleted = () => {},
   backButtonText = 'Previous',
-  nextButtonText = 'Next'
+  nextButtonText = 'Next',
+  formData = {},
+  validateStep = () => true,
+  submissionState = { isSubmitting: false, isSubmitted: false, error: null }
 }) => {
   const [currentStep, setCurrentStep] = useState(initialStep);
-  const [direction, setDirection] = useState(0);
+  const [errors, setErrors] = useState({});
   const steps = React.Children.toArray(children);
   const totalSteps = steps.length;
   const isLastStep = currentStep === totalSteps;
-  const isCompleted = currentStep > totalSteps;
+  const isCompleted = currentStep > totalSteps || submissionState.isSubmitted;
 
   const handleNext = () => {
+    // Don't allow progression if already submitting or submitted
+    if (submissionState.isSubmitting || submissionState.isSubmitted) {
+      return;
+    }
+
+    // Validate current step before proceeding
+    const stepErrors = validateStep(currentStep, formData);
+    
+    if (Object.keys(stepErrors).length > 0) {
+      setErrors(stepErrors);
+      return;
+    }
+    
+    setErrors({});
+    
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
       onStepChange(currentStep + 1);
@@ -28,9 +46,15 @@ const Stepper = ({
   };
 
   const handleBack = () => {
+    // Don't allow going back if submitting or submitted
+    if (submissionState.isSubmitting || submissionState.isSubmitted) {
+      return;
+    }
+
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
       onStepChange(currentStep - 1);
+      setErrors({});
     }
   };
 
@@ -84,6 +108,36 @@ const Stepper = ({
         })}
       </div>
 
+      {/* Error Messages */}
+      {Object.keys(errors).length > 0 && (
+        <div className="mb-6 p-4 bg-red-900/50 border border-red-500 rounded-lg">
+          <div className="flex items-center mb-2">
+            <svg className="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 className="text-red-400 font-medium">Please complete the required fields:</h3>
+          </div>
+          <ul className="text-red-300 text-sm space-y-1">
+            {Object.values(errors).map((error, index) => (
+              <li key={index}>• {error}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Submission Error */}
+      {submissionState.error && (
+        <div className="mb-6 p-4 bg-red-900/50 border border-red-500 rounded-lg">
+          <div className="flex items-center mb-2">
+            <svg className="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 className="text-red-400 font-medium">Submission Error:</h3>
+          </div>
+          <p className="text-red-300 text-sm">{submissionState.error}</p>
+        </div>
+      )}
+
       {/* Step Content */}
       <div className="mb-8">
         {steps[currentStep - 1]}
@@ -94,17 +148,42 @@ const Stepper = ({
         {currentStep > 1 && (
           <button
             onClick={handleBack}
-            className="px-6 py-3 rounded-full bg-gray-700 text-white hover:bg-gray-600 transition-colors"
+            disabled={submissionState.isSubmitting || submissionState.isSubmitted}
+            className={`px-6 py-3 rounded-full text-white transition-colors ${
+              submissionState.isSubmitting || submissionState.isSubmitted
+                ? 'bg-gray-800 cursor-not-allowed opacity-50'
+                : 'bg-gray-700 hover:bg-gray-600'
+            }`}
           >
             {backButtonText}
           </button>
         )}
         <button
           onClick={handleNext}
-          className="px-6 py-3 rounded-full text-white font-medium transition-all duration-200 hover:shadow-lg transform hover:scale-105"
+          disabled={submissionState.isSubmitting || submissionState.isSubmitted}
+          className={`px-6 py-3 rounded-full text-white font-medium transition-all duration-200 flex items-center space-x-2 ${
+            submissionState.isSubmitting || submissionState.isSubmitted
+              ? 'opacity-75 cursor-not-allowed'
+              : 'hover:shadow-lg transform hover:scale-105'
+          }`}
           style={{background: 'linear-gradient(135deg, #c8a8e9 0%, #8b95e5 100%)', color: '#000000'}}
         >
-          {isLastStep ? 'Complete' : nextButtonText}
+          {submissionState.isSubmitting && (
+            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-current" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          )}
+          <span>
+            {submissionState.isSubmitting 
+              ? 'Submitting...' 
+              : submissionState.isSubmitted 
+                ? 'Submitted!' 
+                : isLastStep 
+                  ? 'Complete' 
+                  : nextButtonText
+            }
+          </span>
         </button>
       </div>
     </div>
@@ -135,7 +214,89 @@ const TestTwinSurvey = () => {
     additionalInfo: ''
   });
 
-  const [testType, setTestType] = useState('');
+  const [submissionState, setSubmissionState] = useState({
+    isSubmitting: false,
+    isSubmitted: false,
+    error: null
+  });
+
+  const handleSurveySubmit = async () => {
+    // Prevent multiple submissions
+    if (submissionState.isSubmitting || submissionState.isSubmitted) {
+      return;
+    }
+
+    setSubmissionState({
+      isSubmitting: true,
+      isSubmitted: false,
+      error: null
+    });
+
+    try {
+      const response = await fetch('/api/survey/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+      
+      if (response.ok) {
+        console.log('Survey submitted successfully!');
+        setSubmissionState({
+          isSubmitting: false,
+          isSubmitted: true,
+          error: null
+        });
+      } else {
+        console.error('Failed to submit survey:', result.message);
+        setSubmissionState({
+          isSubmitting: false,
+          isSubmitted: false,
+          error: result.message || 'Failed to submit survey. Please try again.'
+        });
+      }
+    } catch (error) {
+      console.error('Error submitting survey:', error);
+      setSubmissionState({
+        isSubmitting: false,
+        isSubmitted: false,
+        error: 'Network error. Please check your connection and try again.'
+      });
+    }
+  };
+
+  const validateStep = (step, data) => {
+    const errors = {};
+    
+    switch (step) {
+      case 1:
+        if (!data.email) errors.email = 'Email address is required';
+        if (!data.name) errors.name = 'Full name is required';
+        break;
+      case 2:
+        if (!data.testType) errors.testType = 'Please select which test you are taking';
+        if (!data.testTiming) errors.testTiming = 'Please select when you plan to take your test';
+        if (!data.firstAttempt) errors.firstAttempt = 'Please indicate if this is your first attempt';
+        break;
+      case 3:
+        // Resources and ideal score are optional, no validation needed
+        break;
+      case 4:
+        // Contact method and checkin frequency are optional, no validation needed
+        break;
+      case 5:
+        // Study style and partner qualities are optional, no validation needed
+        break;
+      case 6:
+        // All fields in step 6 are optional, no validation needed
+        break;
+    }
+    
+    return errors;
+  };
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -278,9 +439,12 @@ const TestTwinSurvey = () => {
           <Stepper
             initialStep={1}
             onStepChange={(step) => console.log('Step:', step)}
-            onFinalStepCompleted={() => console.log('Survey completed!')}
+            onFinalStepCompleted={handleSurveySubmit}
             backButtonText="Previous"
             nextButtonText="Continue"
+            formData={formData}
+            validateStep={validateStep}
+            submissionState={submissionState}
           >
             {/* Step 1: Personal Info */}
             <Step>
