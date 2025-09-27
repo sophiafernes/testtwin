@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { Renderer, Program, Mesh, Triangle } from 'ogl';
 
 const hexToRgb = hex => {
@@ -89,108 +89,174 @@ export const Plasma = ({
 }) => {
   const containerRef = useRef(null);
   const mousePos = useRef({ x: 0, y: 0 });
+  const rendererRef = useRef(null);
+  const rafRef = useRef(null);
+  const resizeObserverRef = useRef(null);
 
-  useEffect(() => {
-    const useCustomColor = color ? 1.0 : 0.0;
-    const customColorRgb = color ? hexToRgb(color) : [1, 1, 1];
-
-    const directionMultiplier = direction === 'reverse' ? -1.0 : 1.0;
-
-    const renderer = new Renderer({
-      webgl: 2,
-      alpha: true,
-      antialias: false,
-      dpr: Math.min(window.devicePixelRatio || 1, 2)
-    });
-    const gl = renderer.gl;
-    const canvas = gl.canvas;
-    canvas.style.display = 'block';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    containerRef.current.appendChild(canvas);
-
-    const geometry = new Triangle(gl);
-
-    const program = new Program(gl, {
-      vertex: vertex,
-      fragment: fragment,
-      uniforms: {
-        iTime: { value: 0 },
-        iResolution: { value: new Float32Array([1, 1]) },
-        uCustomColor: { value: new Float32Array(customColorRgb) },
-        uUseCustomColor: { value: useCustomColor },
-        uSpeed: { value: speed * 0.4 },
-        uDirection: { value: directionMultiplier },
-        uScale: { value: scale },
-        uOpacity: { value: opacity },
-        uMouse: { value: new Float32Array([0, 0]) },
-        uMouseInteractive: { value: mouseInteractive ? 1.0 : 0.0 }
-      }
-    });
-
-    const mesh = new Mesh(gl, { geometry, program });
-
-    const handleMouseMove = e => {
-      if (!mouseInteractive) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      mousePos.current.x = e.clientX - rect.left;
-      mousePos.current.y = e.clientY - rect.top;
-      const mouseUniform = program.uniforms.uMouse.value;
-      mouseUniform[0] = mousePos.current.x;
-      mouseUniform[1] = mousePos.current.y;
-    };
-
-    if (mouseInteractive) {
-      containerRef.current.addEventListener('mousemove', handleMouseMove);
+  const cleanup = useCallback(() => {
+    // Cancel animation frame
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
     }
 
-    const setSize = () => {
-      if (!containerRef.current) {
-        return; // Exit if the element doesn't exist yet
+    // Disconnect resize observer
+    if (resizeObserverRef.current) {
+      resizeObserverRef.current.disconnect();
+      resizeObserverRef.current = null;
+    }
+
+    // Clean up WebGL context
+    if (rendererRef.current && rendererRef.current.gl) {
+      const gl = rendererRef.current.gl;
+      const canvas = gl.canvas;
+      
+      // Lose the WebGL context to free resources
+      const loseContext = gl.getExtension('WEBGL_lose_context');
+      if (loseContext) {
+        loseContext.loseContext();
       }
-      const rect = containerRef.current.getBoundingClientRect();
-      const width = Math.max(1, Math.floor(rect.width));
-      const height = Math.max(1, Math.floor(rect.height));
-      renderer.setSize(width, height);
-      const res = program.uniforms.iResolution.value;
-      res[0] = gl.drawingBufferWidth;
-      res[1] = gl.drawingBufferHeight;
-    };
+      
+      // Remove canvas from DOM
+      if (canvas && canvas.parentNode && containerRef.current) {
+        try {
+          containerRef.current.removeChild(canvas);
+        } catch (e) {
+          console.warn('Canvas already removed from container');
+        }
+      }
+      
+      rendererRef.current = null;
+    }
 
-    const ro = new ResizeObserver(setSize);
-    ro.observe(containerRef.current);
-    setSize();
+    // Remove mouse event listener
+    if (mouseInteractive && containerRef.current) {
+      containerRef.current.removeEventListener('mousemove', handleMouseMove);
+    }
+  }, [mouseInteractive]);
 
-    let raf = 0;
-    const t0 = performance.now();
-    const loop = t => {
-      let timeValue = (t - t0) * 0.001;
+  const handleMouseMove = useCallback((e) => {
+    if (!mouseInteractive || !containerRef.current || !rendererRef.current) return;
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    mousePos.current.x = e.clientX - rect.left;
+    mousePos.current.y = e.clientY - rect.top;
+    
+    if (rendererRef.current && rendererRef.current.program) {
+      const mouseUniform = rendererRef.current.program.uniforms.uMouse.value;
+      mouseUniform[0] = mousePos.current.x;
+      mouseUniform[1] = mousePos.current.y;
+    }
+  }, [mouseInteractive]);
 
-      if (direction === 'pingpong') {
-        const cycle = Math.sin(timeValue * 0.5) * directionMultiplier;
-        program.uniforms.uDirection.value = cycle;
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    // Clean up any existing renderer
+    cleanup();
+
+    const useCustomColor = color ? 1.0 : 0.0;
+    const customColorRgb = color ? hexToRgb(color) : [1, 1, 1];
+    const directionMultiplier = direction === 'reverse' ? -1.0 : 1.0;
+
+    try {
+      const renderer = new Renderer({
+        webgl: 2,
+        alpha: true,
+        antialias: false,
+        dpr: Math.min(window.devicePixelRatio || 1, 2)
+      });
+
+      const gl = renderer.gl;
+      if (!gl) {
+        console.error('Failed to get WebGL context');
+        return;
       }
 
-      program.uniforms.iTime.value = timeValue;
-      renderer.render({ scene: mesh });
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
+      const canvas = gl.canvas;
+      canvas.style.display = 'block';
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
+      
+      // Ensure container is empty before adding canvas
+      while (containerRef.current.firstChild) {
+        containerRef.current.removeChild(containerRef.current.firstChild);
+      }
+      
+      containerRef.current.appendChild(canvas);
 
-    return () => {
-      cancelAnimationFrame(raf);
-      ro.disconnect();
+      const geometry = new Triangle(gl);
+
+      const program = new Program(gl, {
+        vertex: vertex,
+        fragment: fragment,
+        uniforms: {
+          iTime: { value: 0 },
+          iResolution: { value: new Float32Array([1, 1]) },
+          uCustomColor: { value: new Float32Array(customColorRgb) },
+          uUseCustomColor: { value: useCustomColor },
+          uSpeed: { value: speed * 0.4 },
+          uDirection: { value: directionMultiplier },
+          uScale: { value: scale },
+          uOpacity: { value: opacity },
+          uMouse: { value: new Float32Array([0, 0]) },
+          uMouseInteractive: { value: mouseInteractive ? 1.0 : 0.0 }
+        }
+      });
+
+      const mesh = new Mesh(gl, { geometry, program });
+
+      // Store references for cleanup
+      rendererRef.current = { renderer, gl, program, mesh };
+
+      // Add mouse event listener
       if (mouseInteractive && containerRef.current) {
-        containerRef.current.removeEventListener('mousemove', handleMouseMove);
+        containerRef.current.addEventListener('mousemove', handleMouseMove);
       }
-      try {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        containerRef.current?.removeChild(canvas);
-      } catch {
-        console.warn('Canvas already removed from container');
-      }
-    };
-  }, [color, speed, direction, scale, opacity, mouseInteractive]);
+
+      const setSize = () => {
+        if (!containerRef.current || !rendererRef.current) return;
+        
+        const rect = containerRef.current.getBoundingClientRect();
+        const width = Math.max(1, Math.floor(rect.width));
+        const height = Math.max(1, Math.floor(rect.height));
+        
+        renderer.setSize(width, height);
+        const res = program.uniforms.iResolution.value;
+        res[0] = gl.drawingBufferWidth;
+        res[1] = gl.drawingBufferHeight;
+      };
+
+      // Set up resize observer
+      resizeObserverRef.current = new ResizeObserver(setSize);
+      resizeObserverRef.current.observe(containerRef.current);
+      setSize();
+
+      // Animation loop
+      const t0 = performance.now();
+      const loop = (t) => {
+        if (!rendererRef.current) return;
+        
+        let timeValue = (t - t0) * 0.001;
+
+        if (direction === 'pingpong') {
+          const cycle = Math.sin(timeValue * 0.5) * directionMultiplier;
+          program.uniforms.uDirection.value = cycle;
+        }
+
+        program.uniforms.iTime.value = timeValue;
+        renderer.render({ scene: mesh });
+        rafRef.current = requestAnimationFrame(loop);
+      };
+      
+      rafRef.current = requestAnimationFrame(loop);
+
+    } catch (error) {
+      console.error('Error initializing Plasma:', error);
+    }
+
+    return cleanup;
+  }, [color, speed, direction, scale, opacity, mouseInteractive, cleanup, handleMouseMove]);
 
   return <div ref={containerRef} className="plasma-container" />;
 };

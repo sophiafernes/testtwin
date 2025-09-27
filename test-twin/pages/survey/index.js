@@ -380,7 +380,7 @@ const TestTwinSurvey = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-indigo-950 to-blue-950 geist-font">
+    <div className="min-h-screen bg-gradient-to-br from-violet-900 via-indigo-950 to-blue-950 geist-font">
 
       {/* Navbar */}
       <nav className="w-full backdrop-blur-md border-b border-white/10 sticky top-0 z-50" style={{
@@ -413,8 +413,8 @@ const TestTwinSurvey = () => {
               <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
                 About
               </Link>
-              <Link href="/contact" className="text-gray-300 hover:text-white transition-colors">
-                Contact
+              <Link href="#footer" className="text-gray-300 hover:text-white transition-colors">
+                  Contact
               </Link>
             </div>
           </div>
@@ -710,41 +710,52 @@ const TestTwinSurvey = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-950 text-white">
+      <footer id="footer" className="bg-gray-950 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid md:grid-cols-4 gap-8">
+            {/* Brand */}
             <div className="col-span-1">
               <div className="flex items-center space-x-3 mb-4">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background: 'linear-gradient(135deg, #c8a8e9 0%, #8b95e5 100())'}}>
-                  <span className="text-white font-medium text-xs">TT</span>
+                  <div className="w-10 h-10 rounded-lg overflow-hidden relative">
+                    <Image 
+                      src="/logo.png" 
+                      alt="TestTwin Logo" 
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
                 </div>
-                <span className="text-xl font-medium">TestTwin</span>
+                <span className="text-xl font-medium" style={{fontWeight: '500'}}>TestTwin</span>
               </div>
-              <p className="text-gray-400 text-sm">
+              <p className="text-gray-400 text-sm" style={{fontWeight: '400'}}>
                 Connecting study partners for academic success.
               </p>
             </div>
 
+            {/* Contact */}
             <div>
-              <h4 className="mb-4 font-medium">Contact</h4>
-              <div className="space-y-2 text-sm text-gray-400">
+              <h4 className="mb-4" style={{fontWeight: '500'}}>Contact</h4>
+              <div className="space-y-2 text-sm text-gray-400" style={{fontWeight: '400'}}>
                 <p>support@testtwin.com</p>
                 <p>partnership@testtwin.com</p>
               </div>
             </div>
 
+            {/* Social */}
             <div>
-              <h4 className="mb-4 font-medium">Follow Us</h4>
-              <div className="space-y-2 text-sm text-gray-400">
+              <h4 className="mb-4" style={{fontWeight: '500'}}>Follow Us</h4>
+              <div className="space-y-2 text-sm text-gray-400" style={{fontWeight: '400'}}>
                 <p>Reddit: testtwin</p>
                 <p>Instagram: testtwin</p>
                 <p>TikTok: testtwin</p>
               </div>
             </div>
 
+            {/* Legal */}
             <div>
-              <h4 className="mb-4 font-medium">Legal</h4>
-              <div className="space-y-2 text-sm text-gray-400">
+              <h4 className="mb-4" style={{fontWeight: '500'}}>Legal</h4>
+              <div className="space-y-2 text-sm text-gray-400" style={{fontWeight: '400'}}>
                 <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
                 <br />
                 <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
@@ -752,8 +763,8 @@ const TestTwinSurvey = () => {
             </div>
           </div>
 
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2024 TestTwin. All rights reserved.</p>
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400" style={{fontWeight: '400'}}>
+            <p>&copy; 2026 TestTwin. All rights reserved.</p>
           </div>
         </div>
       </footer>
