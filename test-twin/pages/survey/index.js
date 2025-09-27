@@ -389,7 +389,7 @@ const TestTwinSurvey = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-indigo-950 to-blue-950 geist-font">
+    <div className="min-h-screen bg-gradient-to-br from-violet-950 via-indigo-950 to-blue-950 geist-font">
 
       {/* Navbar */}
       <nav className="w-full backdrop-blur-md border-b border-white/10 sticky top-0 z-50" style={{
@@ -433,7 +433,7 @@ const TestTwinSurvey = () => {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-light md:text-6xl text-white mb-6">
+          <h1 className="text-4xl font-semibold md:text-6xl text-white mb-6">
             Find A Study Partner in{' '}
             <span className="text-transparent" style={{backgroundImage: 'linear-gradient(135deg, #c8a8e9 0%, #8b95e5 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text'}}>
               2 Minutes

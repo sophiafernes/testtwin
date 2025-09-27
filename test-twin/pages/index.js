@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 const TestTwinHomepage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-indigo-950 to-blue-950 geist-font">
+    <div className="min-h-screen bg-gradient-to-br from-violet-950 via-indigo-950 to-blue-950 geist-font">
       {/* Fixed Plasma Background for entire page */}
       <div className="fixed inset-0 w-full h-full pointer-events-none z-0">
         <Plasma
@@ -154,7 +154,7 @@ const TestTwinHomepage = () => {
             {/* Coming Soon Section */}
             <div className="mt-20 text-center">
               <h3 className="text-2xl mb-8 text-white" style={{fontWeight: '500'}}>Coming Soon</h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-4">
                 <div className="bg-gray-800/60 backdrop-blur-sm p-4 rounded-xl" style={{border: '2px solid #c8a8e9'}}>
                   <span style={{color: '#c8a8e9', fontWeight: '500'}}>Community Support Hub</span>
                 </div>

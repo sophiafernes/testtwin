@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 const TermsPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-indigo-950 to-blue-950 geist-font">
+    <div className="min-h-screen bg-gradient-to-br from-violet-950 via-indigo-950 to-blue-950 geist-font">
       {/* Top Navbar */}
       <nav className="w-full backdrop-blur-md border-b border-white/10 sticky top-0 z-50" style={{
         background: 'rgba(255, 255, 255, 0.05)',
