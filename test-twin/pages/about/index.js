@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 const AboutPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-900 via-indigo-950 to-blue-950 geist-font">
+    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-indigo-950 to-blue-950 geist-font">
       {/* Top Navbar */}
       <nav className="w-full backdrop-blur-md border-b border-white/10 sticky top-0 z-50" style={{
         background: 'rgba(255, 255, 255, 0.05)',
@@ -69,7 +69,7 @@ const AboutPage = () => {
             </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed max-w-4xl mx-auto" style={{fontWeight: '400'}}>
+          <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed max-w-4xl mx-auto" style={{fontWeight: '300'}}>
             We're a team of dedicated students who understand the challenges of test preparation and the power of peer accountability.
           </p>
         </div>
@@ -98,8 +98,13 @@ const AboutPage = () => {
           <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
             {/* Team Member 1 */}
             <div className="bg-gray-800/60 backdrop-blur-sm p-8 rounded-2xl text-center" style={{border: '2px solid #c8a8e9'}}>
-              <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden relative bg-gradient-to-br from-purple-400 to-blue-400 flex items-center justify-center">
-                <span className="text-4xl font-bold text-white">LM</span>
+              <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden relative">
+                <Image 
+                  src="/lyla.png" 
+                  alt="Lyla Malik" 
+                  fill
+                  className="object-cover"
+                />
               </div>
               <h3 className="text-2xl mb-3 text-white" style={{fontWeight: '500'}}>
                 Lyla Malik
@@ -118,8 +123,13 @@ const AboutPage = () => {
 
             {/* Team Member 2 */}
             <div className="bg-gray-800/60 backdrop-blur-sm p-8 rounded-2xl text-center" style={{border: '2px solid #c8a8e9'}}>
-              <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden relative bg-gradient-to-br from-blue-400 to-purple-400 flex items-center justify-center">
-                <span className="text-4xl font-bold text-white">SF</span>
+              <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden relative">
+                <Image 
+                  src="/sophia.png" 
+                  alt="Sophia Fernandes" 
+                  fill
+                  className="object-cover"
+                />
               </div>
               <h3 className="text-2xl mb-3 text-white" style={{fontWeight: '500'}}>
                 Sophia Fernandes
@@ -255,7 +265,24 @@ const AboutPage = () => {
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400" style={{fontWeight: '400'}}>
-            <p>&copy; 2026 TestTwin. All rights reserved.</p>
+            <p>&copy; 2026 TestTwin. All rights reserved. </p>
+            <a 
+              href="https://joshshergill.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-gray-600 hover:text-transparent hover:bg-clip-text"
+              style={{
+                '--hover-gradient': 'linear-gradient(135deg, rgb(112, 26, 117), rgb(51, 80, 178))'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundImage = 'var(--hover-gradient)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundImage = '';
+              }}
+            >
+              website design by josh shergill
+            </a>
           </div>
         </div>
       </footer>

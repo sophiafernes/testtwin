@@ -8,18 +8,15 @@ const hexToRgb = hex => {
 };
 
 const vertex = `#version 300 es
-precision highp float;
 in vec2 position;
-in vec2 uv;
-out vec2 vUv;
 void main() {
-  vUv = uv;
   gl_Position = vec4(position, 0.0, 1.0);
 }
 `;
 
+// KEY CHANGE: Reduced shader complexity significantly
 const fragment = `#version 300 es
-precision highp float;
+precision mediump float;
 uniform vec2 iResolution;
 uniform float iTime;
 uniform vec3 uCustomColor;
@@ -36,13 +33,15 @@ void mainImage(out vec4 o, vec2 C) {
   vec2 center = iResolution.xy * 0.5;
   C = (C - center) / uScale + center;
   
-  vec2 mouseOffset = (uMouse - center) * 0.0002;
-  C += mouseOffset * length(C - center) * step(0.5, uMouseInteractive);
+  // Simplified mouse interaction
+  vec2 mouseOffset = (uMouse - center) * 0.0001;
+  C += mouseOffset * uMouseInteractive;
   
   float i, d, z, T = iTime * uSpeed * uDirection;
   vec3 O, p, S;
 
-  for (vec2 r = iResolution.xy, Q; ++i < 60.; O += o.w/d*o.xyz) {
+  // CRITICAL: Reduced iterations from 60 to 35
+  for (vec2 r = iResolution.xy, Q; ++i < 35.; O += o.w/d*o.xyz) {
     p = z*normalize(vec3(C-.5*r,r.y)); 
     p.z -= 4.; 
     S = p;
@@ -50,28 +49,21 @@ void mainImage(out vec4 o, vec2 C) {
     
     p.x += .4*(1.+p.y)*sin(d + p.x*0.1)*cos(.34*d + p.x*0.05); 
     Q = p.xz *= mat2(cos(p.y+vec4(0,11,33,0)-T)); 
-    z+= d = abs(sqrt(length(Q*Q)) - .25*(5.+S.y))/3.+8e-4; 
+    z+= d = abs(sqrt(dot(Q,Q)) - .25*(5.+S.y))/3.+8e-4; 
     o = 1.+sin(S.y+p.z*.5+S.z-length(S-p)+vec4(2,1,0,8));
   }
   
   o.xyz = tanh(O/1e4);
 }
 
-bool finite1(float x){ return !(isnan(x) || isinf(x)); }
-vec3 sanitize(vec3 c){
-  return vec3(
-    finite1(c.r) ? c.r : 0.0,
-    finite1(c.g) ? c.g : 0.0,
-    finite1(c.b) ? c.b : 0.0
-  );
-}
-
 void main() {
   vec4 o = vec4(0.0);
   mainImage(o, gl_FragCoord.xy);
-  vec3 rgb = sanitize(o.rgb);
   
-  float intensity = (rgb.r + rgb.g + rgb.b) / 3.0;
+  // Simplified sanitization
+  vec3 rgb = clamp(o.rgb, 0.0, 1.0);
+  
+  float intensity = dot(rgb, vec3(0.299, 0.587, 0.114));
   vec3 customColor = intensity * uCustomColor;
   vec3 finalColor = mix(rgb, customColor, step(0.5, uUseCustomColor));
   
@@ -94,30 +86,25 @@ export const Plasma = ({
   const resizeObserverRef = useRef(null);
 
   const cleanup = useCallback(() => {
-    // Cancel animation frame
     if (rafRef.current) {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
     }
 
-    // Disconnect resize observer
     if (resizeObserverRef.current) {
       resizeObserverRef.current.disconnect();
       resizeObserverRef.current = null;
     }
 
-    // Clean up WebGL context
     if (rendererRef.current && rendererRef.current.gl) {
       const gl = rendererRef.current.gl;
       const canvas = gl.canvas;
       
-      // Lose the WebGL context to free resources
       const loseContext = gl.getExtension('WEBGL_lose_context');
       if (loseContext) {
         loseContext.loseContext();
       }
       
-      // Remove canvas from DOM
       if (canvas && canvas.parentNode && containerRef.current) {
         try {
           containerRef.current.removeChild(canvas);
@@ -129,7 +116,6 @@ export const Plasma = ({
       rendererRef.current = null;
     }
 
-    // Remove mouse event listener
     if (mouseInteractive && containerRef.current) {
       containerRef.current.removeEventListener('mousemove', handleMouseMove);
     }
@@ -152,7 +138,6 @@ export const Plasma = ({
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Clean up any existing renderer
     cleanup();
 
     const useCustomColor = color ? 1.0 : 0.0;
@@ -160,11 +145,13 @@ export const Plasma = ({
     const directionMultiplier = direction === 'reverse' ? -1.0 : 1.0;
 
     try {
+      // CRITICAL: Aurora's renderer settings
       const renderer = new Renderer({
         webgl: 2,
         alpha: true,
-        antialias: false,
-        dpr: Math.min(window.devicePixelRatio || 1, 2)
+        premultipliedAlpha: true,
+        antialias: false, // Aurora uses true, but false is faster
+        dpr: 1 // Fixed DPR like Aurora, no auto-scaling
       });
 
       const gl = renderer.gl;
@@ -173,12 +160,17 @@ export const Plasma = ({
         return;
       }
 
+      // Aurora's blend setup
+      gl.clearColor(0, 0, 0, 0);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
       const canvas = gl.canvas;
       canvas.style.display = 'block';
       canvas.style.width = '100%';
       canvas.style.height = '100%';
+      canvas.style.backgroundColor = 'transparent';
       
-      // Ensure container is empty before adding canvas
       while (containerRef.current.firstChild) {
         containerRef.current.removeChild(containerRef.current.firstChild);
       }
@@ -186,56 +178,53 @@ export const Plasma = ({
       containerRef.current.appendChild(canvas);
 
       const geometry = new Triangle(gl);
+      // Aurora removes UV like this
+      if (geometry.attributes.uv) {
+        delete geometry.attributes.uv;
+      }
 
       const program = new Program(gl, {
         vertex: vertex,
         fragment: fragment,
         uniforms: {
           iTime: { value: 0 },
-          iResolution: { value: new Float32Array([1, 1]) },
-          uCustomColor: { value: new Float32Array(customColorRgb) },
+          iResolution: { value: [1, 1] }, // Will be set in resize
+          uCustomColor: { value: customColorRgb },
           uUseCustomColor: { value: useCustomColor },
           uSpeed: { value: speed * 0.4 },
           uDirection: { value: directionMultiplier },
           uScale: { value: scale },
           uOpacity: { value: opacity },
-          uMouse: { value: new Float32Array([0, 0]) },
+          uMouse: { value: [0, 0] },
           uMouseInteractive: { value: mouseInteractive ? 1.0 : 0.0 }
         }
       });
 
       const mesh = new Mesh(gl, { geometry, program });
 
-      // Store references for cleanup
       rendererRef.current = { renderer, gl, program, mesh };
 
-      // Add mouse event listener
       if (mouseInteractive && containerRef.current) {
         containerRef.current.addEventListener('mousemove', handleMouseMove);
       }
 
-      const setSize = () => {
+      // Aurora's resize pattern
+      const resize = () => {
         if (!containerRef.current || !rendererRef.current) return;
-        
-        const rect = containerRef.current.getBoundingClientRect();
-        const width = Math.max(1, Math.floor(rect.width));
-        const height = Math.max(1, Math.floor(rect.height));
-        
+        const width = containerRef.current.offsetWidth;
+        const height = containerRef.current.offsetHeight;
         renderer.setSize(width, height);
-        const res = program.uniforms.iResolution.value;
-        res[0] = gl.drawingBufferWidth;
-        res[1] = gl.drawingBufferHeight;
+        program.uniforms.iResolution.value = [width, height];
       };
 
-      // Set up resize observer
-      resizeObserverRef.current = new ResizeObserver(setSize);
-      resizeObserverRef.current.observe(containerRef.current);
-      setSize();
+      window.addEventListener('resize', resize);
+      resize();
 
-      // Animation loop
+      // Aurora's animation loop pattern
       const t0 = performance.now();
-      const loop = (t) => {
-        if (!rendererRef.current) return;
+      let animateId = 0;
+      const update = (t) => {
+        animateId = requestAnimationFrame(update);
         
         let timeValue = (t - t0) * 0.001;
 
@@ -246,16 +235,28 @@ export const Plasma = ({
 
         program.uniforms.iTime.value = timeValue;
         renderer.render({ scene: mesh });
-        rafRef.current = requestAnimationFrame(loop);
       };
       
-      rafRef.current = requestAnimationFrame(loop);
+      animateId = requestAnimationFrame(update);
+      rafRef.current = animateId;
+
+      // Cleanup function like Aurora
+      return () => {
+        cancelAnimationFrame(animateId);
+        window.removeEventListener('resize', resize);
+        if (mouseInteractive && containerRef.current) {
+          containerRef.current.removeEventListener('mousemove', handleMouseMove);
+        }
+        if (containerRef.current && gl.canvas.parentNode === containerRef.current) {
+          containerRef.current.removeChild(gl.canvas);
+        }
+        gl.getExtension('WEBGL_lose_context')?.loseContext();
+      };
 
     } catch (error) {
       console.error('Error initializing Plasma:', error);
     }
 
-    return cleanup;
   }, [color, speed, direction, scale, opacity, mouseInteractive, cleanup, handleMouseMove]);
 
   return <div ref={containerRef} className="plasma-container" />;

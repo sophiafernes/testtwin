@@ -5,16 +5,16 @@ import Image from 'next/image';
 
 const TestTwinHomepage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-900 via-indigo-950 to-blue-950 geist-font">
+    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-indigo-950 to-blue-950 geist-font">
       {/* Fixed Plasma Background for entire page */}
       <div className="fixed inset-0 w-full h-full pointer-events-none z-0">
         <Plasma
           color="#c8a8e9"
-          speed={0.5}
+          speed={0.7}
           direction="reverse"
-          scale={2.5}
-          opacity={0.4}
-          mouseInteractive={true}
+          scale={2}
+          opacity={0.7}
+          mouseInteractive={false}
         />
       </div>
 
@@ -84,7 +84,7 @@ const TestTwinHomepage = () => {
                 </span>
               </h1>
               
-              <p className="text-xl md:text-2xl mt-8 text-gray-300 mb-8 leading-relaxed" style={{fontWeight: '400'}}>
+              <p className="text-xl md:text-2xl mt-8 text-gray-200 mb-8 leading-relaxed" style={{fontWeight: '300'}}>
                 Are you struggling to stay on track with your LSAT or MCAT study plan? Has procrastination taken over your prep journey?
               </p>
 
@@ -92,7 +92,7 @@ const TestTwinHomepage = () => {
                 <Link href="/survey" style={{color: '#000000', background: 'linear-gradient(135deg, #c8a8e9 0%, #8b95e5 100%)', fontWeight: '500'}} className="text-white px-8 py-4 rounded-full text-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
                   Find a Study Partner
                 </Link>
-                <p className="text-gray-200" style={{fontWeight: '400'}}>Simply fill out our 2-minute form & get matched within a week!</p>
+                <p className="text-gray-200" style={{fontWeight: '400'}}>Simply fill out our 2-minute form & get matched!</p>
               </div>
             </div>
 
@@ -104,7 +104,7 @@ const TestTwinHomepage = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
-                <h3 className="text-xl mb-4 text-white" style={{fontWeight: '500'}}>Matchmaking Excellence</h3>
+                <h3 className="text-xl mb-4 text-white" style={{fontWeight: '500'}}>250+ Matches & Counting</h3>
                 <p className="text-gray-300 leading-relaxed" style={{fontWeight: '400'}}>
                   Our algorithm matches you with study partners who share your goals, target scores, and compatible study schedules. 
                   It's like a dating app - but way more suited to your academic needs!
@@ -117,7 +117,7 @@ const TestTwinHomepage = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                   </svg>
                 </div>
-                <h3 className="text-xl mb-4 text-white" style={{fontWeight: '500'}}>Affordable Solution</h3>
+                <h3 className="text-xl mb-4 text-white" style={{fontWeight: '500'}}>Affordable Alternative</h3>
                 <p className="text-gray-300 leading-relaxed" style={{fontWeight: '400'}}>
                   We believe effective study resources shouldn't break the bank. TestTwin offers an affordable alternative 
                   to expensive prep courses, promoting accountability between study twins.
@@ -130,7 +130,7 @@ const TestTwinHomepage = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                   </svg>
                 </div>
-                <h3 className="text-xl mb-4 text-white" style={{fontWeight: '500'}}>250+ Students Matched</h3>
+                <h3 className="text-xl mb-4 text-white" style={{fontWeight: '500'}}>For Students, By Students</h3>
                 <p className="text-gray-200 leading-relaxed" style={{fontWeight: '400'}}>
                   We understand the costs of applying to professional school. TestTwin levels the playing field so every 
                   prospective student has the opportunity to excel with peer accountability.
@@ -143,11 +143,8 @@ const TestTwinHomepage = () => {
               <h2 className="text-3xl md:text-4xl mb-4" style={{fontWeight: '500'}}>
                 Transform Your Study Habits Today
               </h2>
-              <p className="text-xl mb-8 opacity-90" style={{fontWeight: '400'}}>
+              <p className="text-xl mb-8 opacity-90" style={{fontWeight: '300'}}>
                 This is your chance to boost productivity and stride confidently towards your target score.
-              </p>
-              <p className="text-lg mb-8 opacity-80" style={{fontWeight: '400'}}>
-                Join our community of dedicated test twins today—because together, we're a dynamic duo!
               </p>
               <Link href="/survey" className="inline-block bg-white px-8 py-4 rounded-full text-lg hover:shadow-xl transform hover:scale-105 text-white transition-all duration-200" style={{color: '#000000', fontWeight: '500', background: 'linear-gradient(135deg, #c8a8e9 0%, #8b95e5 100%)'}}>
                 Get Matched Now!
@@ -231,6 +228,23 @@ const TestTwinHomepage = () => {
 
             <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400" style={{fontWeight: '400'}}>
               <p>&copy; 2026 TestTwin. All rights reserved.</p>
+              <a 
+                href="https://joshshergill.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-transparent hover:bg-clip-text"
+                style={{
+                  '--hover-gradient': 'linear-gradient(135deg, rgb(112, 26, 117), rgb(51, 80, 178))'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundImage = 'var(--hover-gradient)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundImage = '';
+                }}
+              >
+                website design by josh shergill
+              </a>
             </div>
           </div>
         </footer>

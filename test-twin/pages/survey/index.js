@@ -110,7 +110,7 @@ const Stepper = ({
 
       {/* Error Messages */}
       {Object.keys(errors).length > 0 && (
-        <div className="mb-6 p-4 bg-red-900/50 border border-red-500 rounded-lg">
+        <div className="mb-6 p-4 border border-red-500 rounded-lg">
           <div className="flex items-center mb-2">
             <svg className="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -268,12 +268,21 @@ const TestTwinSurvey = () => {
     }
   };
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const validateStep = (step, data) => {
     const errors = {};
     
     switch (step) {
       case 1:
-        if (!data.email) errors.email = 'Email address is required';
+        if (!data.email) {
+          errors.email = 'Email address is required';
+        } else if (!validateEmail(data.email)) {
+          errors.email = 'Please enter a valid email address';
+        }
         if (!data.name) errors.name = 'Full name is required';
         break;
       case 2:
@@ -380,7 +389,7 @@ const TestTwinSurvey = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-900 via-indigo-950 to-blue-950 geist-font">
+    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-indigo-950 to-blue-950 geist-font">
 
       {/* Navbar */}
       <nav className="w-full backdrop-blur-md border-b border-white/10 sticky top-0 z-50" style={{
@@ -424,14 +433,14 @@ const TestTwinSurvey = () => {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl text-white mb-6">
+          <h1 className="text-4xl font-light md:text-6xl text-white mb-6">
             Find A Study Partner in{' '}
             <span className="text-transparent" style={{backgroundImage: 'linear-gradient(135deg, #c8a8e9 0%, #8b95e5 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text'}}>
               2 Minutes
             </span>
           </h1>
           <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-            Answer a few questions to get paired with your ideal study partner. This takes about 2 minutes.
+            Answer a few questions to get paired with your ideal study partner.
           </p>
         </div>
 
@@ -765,6 +774,23 @@ const TestTwinSurvey = () => {
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400" style={{fontWeight: '400'}}>
             <p>&copy; 2026 TestTwin. All rights reserved.</p>
+            <a 
+                href="https://joshshergill.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-transparent hover:bg-clip-text"
+                style={{
+                  '--hover-gradient': 'linear-gradient(135deg, rgb(112, 26, 117), rgb(51, 80, 178))'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundImage = 'var(--hover-gradient)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundImage = '';
+                }}
+              >
+                website design by josh shergill
+              </a>
           </div>
         </div>
       </footer>

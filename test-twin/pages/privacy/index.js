@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 const PrivacyPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-900 via-indigo-950 to-blue-950 geist-font">
+    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-indigo-950 to-blue-950 geist-font">
       {/* Top Navbar */}
       <nav className="w-full backdrop-blur-md border-b border-white/10 sticky top-0 z-50" style={{
         background: 'rgba(255, 255, 255, 0.05)',
@@ -290,6 +290,23 @@ const PrivacyPage = () => {
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400" style={{fontWeight: '400'}}>
             <p>&copy; 2026 TestTwin. All rights reserved.</p>
+            <a 
+                href="https://joshshergill.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-transparent hover:bg-clip-text"
+                style={{
+                  '--hover-gradient': 'linear-gradient(135deg, rgb(112, 26, 117), rgb(51, 80, 178))'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundImage = 'var(--hover-gradient)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundImage = '';
+                }}
+              >
+                website design by josh shergill
+              </a>
           </div>
         </div>
       </footer>
