@@ -141,7 +141,7 @@ const AboutPage = () => {
                 Sophia is a pre-law student preparing for the LSAT. She focuses on building a supportive community 
                 for students pursuing professional schools.  Her own journey navigating the challenges of LSAT preparation 
                 inspired her to co-found TestTwin, where she advocates for accessible and collaborative study environments. 
-                Outside of her studies, she enjoys debating current issues, volunteering in mentorship 
+                Outside of her studies, she enjoys running the UofT Moot Team, volunteering in mentorship 
                 programs, and exploring pathways to law school.
               </p>
             </div>
