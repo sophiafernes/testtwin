@@ -116,7 +116,7 @@ const AboutPage = () => {
                 Lyla is a pre-med student who experienced firsthand the challenges of MCAT preparation. 
                 After struggling with motivation and accountability during her own test prep journey, 
                 she co-founded TestTwin to help other students find the support system she wished she had. 
-                When she's not working on TestTwin, you can find her volunteering at local hospitals 
+                When she's not working on TestTwin, you can find her volunteering in medical care in the Peel region, 
                 and researching innovative approaches to medical education.
               </p>
             </div>
@@ -141,8 +141,8 @@ const AboutPage = () => {
                 Sophia is a pre-law student preparing for the LSAT. She focuses on building a supportive community 
                 for students pursuing professional schools.  Her own journey navigating the challenges of LSAT preparation 
                 inspired her to co-found TestTwin, where she advocates for accessible and collaborative study environments. 
-                Outside of her studies, she enjoys running the UofT Moot Team, volunteering in mentorship 
-                programs, and exploring pathways to law school.
+                Outside of her studies, she directs the UofT Canadian and American Moot Teams, volunteers in mentorship 
+                programs, and works as a Counsellor at the National Pardon Centre.
               </p>
             </div>
           </div>
