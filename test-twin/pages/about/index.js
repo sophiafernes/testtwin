@@ -267,7 +267,7 @@ const AboutPage = () => {
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400" style={{fontWeight: '400'}}>
             <p>&copy; 2026 TestTwin. All rights reserved. </p>
             <a 
-              href="https://joshshergill.com" 
+              href="https://www.linkedin.com/in/sophia-fernandes-ab4a8b210/" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-gray-600 hover:text-transparent hover:bg-clip-text"
@@ -281,7 +281,7 @@ const AboutPage = () => {
                 e.target.style.backgroundImage = '';
               }}
             >
-              website design by josh shergill
+              website design by sophia fernandes
             </a>
           </div>
         </div>
